@@ -7,7 +7,10 @@ WORKDIR /app
 # Copiare il contenuto del frontend
 COPY . .
 
+# Installare i pacchetti (se usi un task runner come Gulp/Grunt)
+RUN npm install
 
 # Esporre la porta del server di sviluppo
 EXPOSE 3000
 
+CMD ["npm", "start"]

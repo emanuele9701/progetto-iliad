@@ -34,7 +34,7 @@ services:
       MYSQL_USER: iliad
       MYSQL_PASSWORD: iliad24
     ports:
-      - "3306:3306"
+      - "3303:3303"
     volumes:
       - dbdata:/var/lib/mysql
     networks:

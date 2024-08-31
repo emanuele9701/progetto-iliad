@@ -8,7 +8,9 @@
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="{{ route('orders.index') }}">Gestione Ordini</a>
+    <a class="navbar-brand ps-2" href="{{ route('home') }}">Home</a>
+    <a class="navbar-brand ps-2" href="{{ route('orders.index') }}">Ordini</a>
+    <a class="navbar-brand ps-2" href="{{ route('products.index') }}">Prodotti</a>
 </nav>
 
 <div class="container mt-4">

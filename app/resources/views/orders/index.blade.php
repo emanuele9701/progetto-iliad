@@ -25,7 +25,7 @@
         @foreach($orders as $order)
             <tr>
                 <td>{{ $order->id }}</td>
-                <td>{{ $order->customer_name }}</td>
+                <td>{{ $order->name }}</td>
                 <td>{{ $order->description }}</td>
                 <td>{{ $order->created_at->format('Y-m-d') }}</td>
                 <td>

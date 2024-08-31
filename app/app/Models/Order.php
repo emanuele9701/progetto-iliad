@@ -15,4 +15,9 @@ class Order extends Model
         'order_date',
         'total_value',
     ];
+
+    public function products()
+    {
+        return $this->belongsToMany(Product::class, 'products_order');
+    }
 }

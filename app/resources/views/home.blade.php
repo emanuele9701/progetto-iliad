@@ -2,6 +2,12 @@
 @extends('layouts.app')
 
 @section('title', 'Home - Sistema di Gestione Ordini')
+@section('link')
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-table@1.23.2/dist/bootstrap-table.min.css">
+@endsection
+
+
 
 @section('content')
     <div class="jumbotron text-center">
@@ -14,7 +20,8 @@
             <div class="card mb-4">
                 <div class="card-body text-center">
                     <h5 class="card-title">Visualizza Ordini</h5>
-                    <p class="card-text">Accedi all'elenco completo degli ordini con possibilità di filtraggio e ricerca.</p>
+                    <p class="card-text">Accedi all'elenco completo degli ordini con possibilità di filtraggio e
+                        ricerca.</p>
                     <a href="{{ route('orders.index') }}" class="btn btn-primary btn-lg btn-block">Lista Ordini</a>
                 </div>
             </div>
@@ -44,14 +51,17 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Ordini Recenti</h5>
-                    <ul class="list-group">
-                        @foreach($recentOrders as $order)
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                Ordine #{{ $order->id }} - {{ $order->customer_name }}
-                                <span class="badge badge-primary badge-pill">{{ $order->created_at->format('d/m/Y') }}</span>
-                            </li>
-                        @endforeach
-                    </ul>
+                    <!-- Tabella ordini -->
+                    <table id="table" data-url="{{route('api.orders.lista')}}">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Cliente</th>
+                            <th>Valore</th>
+                            <th>Data ordine</th>
+                        </tr>
+                        </thead>
+                    </table>
                 </div>
             </div>
         </div>
@@ -59,9 +69,9 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Statistiche</h5>
-                    <p>Totale ordini: <strong>{{ $totalOrders }}</strong></p>
-                    <p>Ordini oggi: <strong>{{ $todayOrders }}</strong></p>
-                    <p>Valore totale ordini: <strong>€{{ number_format($totalValue, 2) }}</strong></p>
+                    <p>Totale ordini: <strong id="totaleOrdini"></strong></p>
+                    <p>Ordini oggi: <strong id="ordiniOdierni"></strong></p>
+                    <p>Valore totale ordini: <strong id="sumOrdini"></strong></p>
                 </div>
             </div>
         </div>
@@ -76,16 +86,23 @@
             margin-bottom: 2rem;
             border-radius: 0.3rem;
         }
+
         .card {
             transition: all 0.3s ease;
         }
+
         .card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
+
         .btn-lg {
             padding: 0.75rem 1.25rem;
             font-size: 1.25rem;
         }
     </style>
+@endsection
+
+@section('scripts')
+    @vite('resources/js/home.js')
 @endsection

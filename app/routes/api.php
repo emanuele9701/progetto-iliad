@@ -14,6 +14,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::group(['as' => 'api.'],function () {
+    Route::group(['prefix' => 'orders', 'as' => 'orders.'], function () {
+        Route::get('/', [\App\Http\Controllers\OrderApiController::class, 'index'])->name('lista');
+        Route::get('/stats', [\App\Http\Controllers\OrderApiController::class, 'stats'])->name('stats');
+
+    });
 });

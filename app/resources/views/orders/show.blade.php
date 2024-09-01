@@ -3,13 +3,13 @@
 @section('title', 'Dettagli Ordine')
 
 @section('content')
-    <h1>Dettagli Ordine #{{ $order->id }}</h1>
+    <h1>Dettagli Ordine <span id="order-id">{{$order->id}}</span></h1>
 
     <div class="card">
         <div class="card-body">
-            <h5 class="card-title">Cliente: {{ $order->customer_name }}</h5>
-            <p class="card-text">Descrizione: {{ $order->description }}</p>
-            <p class="card-text">Data: {{ $order->created_at->format('Y-m-d H:i:s') }}</p>
+            <h5 class="card-title">Cliente: <span id="customer-name"></span></h5>
+            <p class="card-text">Descrizione: <span id="description"></span></p>
+            <p class="card-text">Data: <span id="created-at"></span></p>
         </div>
     </div>
 
@@ -23,18 +23,13 @@
             <th>Totale</th>
         </tr>
         </thead>
-        <tbody>
-        @foreach($order->products as $product)
-            <tr>
-                <td>{{ $product->name }}</td>
-                <td>{{ $product->pivot->quantity }}</td>
-                <td>€{{ number_format($product->price, 2) }}</td>
-                <td>€{{ number_format($product->price * $product->pivot->quantity, 2) }}</td>
-            </tr>
-        @endforeach
+        <tbody id="products-list">
         </tbody>
     </table>
 
-    <a href="{{ route('orders.edit', $order) }}" class="btn btn-warning">Modifica Ordine</a>
+    <a href="#" class="btn btn-warning" id="edit-order">Modifica Ordine</a>
     <a href="{{ route('orders.index') }}" class="btn btn-secondary">Torna alla Lista</a>
+@endsection
+@section('scripts')
+    @vite(['resources/js/orders.js'])
 @endsection

@@ -14,6 +14,7 @@ class CreateProductsTable extends Migration
             $table->text('description')->nullable();
             $table->decimal('price', 8, 2); // Prezzo con due decimali
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

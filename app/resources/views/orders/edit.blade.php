@@ -15,7 +15,8 @@
 @endsection
 
 @section('content')
-    <h1>Nuovo ordine</h1>
+    <input type="hidden" name="id_ordine" value="{{$order->id}}">
+    <h1>Modifica Ordine #<span id="spn-id"></span></h1>
     <form>
 
         <div class="" id="container-ordine">
@@ -75,10 +76,10 @@
             </div>
             <div class="row">
                 <div class="col-12">
-                    <button type="submit" class="btn btn-primary">Salva ordine<div class="spinner-border ms-2 d-none" role="status">
+                    <button type="submit" class="btn btn-primary">Aggiorna Ordine<div class="spinner-border ms-2 d-none" role="status">
                             <span class="visually-hidden">Loading...</span>
                         </div></button>
-                    <a href="{{ route('orders.index') }}" class="btn btn-secondary">Annulla</a>
+                    <a href="{{ route('orders.show', $order) }}" class="btn btn-secondary">Annulla</a>
                 </div>
             </div>
         </div>

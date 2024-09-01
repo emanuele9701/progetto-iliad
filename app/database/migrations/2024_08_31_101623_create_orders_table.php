@@ -18,6 +18,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->date('order_date');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

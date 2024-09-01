@@ -4,7 +4,6 @@
 @section('title', 'Home - Sistema di Gestione Ordini')
 @section('link')
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-table@1.23.2/dist/bootstrap-table.min.css">
 @endsection
 
 

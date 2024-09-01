@@ -19,6 +19,10 @@ class OrderController extends Controller
     }
 
     public function edit(Order $order) {
-        return view('orders.create', compact('order'));
+        return view('orders.edit', compact('order'));
+    }
+
+    public function create() {
+        return view('orders.create');
     }
 }

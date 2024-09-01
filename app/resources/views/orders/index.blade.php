@@ -2,65 +2,38 @@
 @extends('layouts.app')
 
 @section('title', 'Lista Ordini')
-
+@section('link')
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+@endsection
 @section('content')
     <h1>Lista Ordini</h1>
 
-    <div class="mb-3">
-        <input type="date" id="date-filter" class="form-control d-inline-block w-auto">
-        <input type="text" id="search-filter" class="form-control d-inline-block w-auto" placeholder="Cerca per nome o descrizione">
-    </div>
-
-    <table class="table" id="orders-table">
+    <table class="table" id="orders-table" data-url="{{ route('api.orders.lista') }}">
         <thead>
         <tr>
-            <th>ID</th>
+            <th>#</th>
             <th>Nome Cliente</th>
             <th>Descrizione</th>
+            <th>Prezzo</th>
             <th>Data</th>
-            <th>Azioni</th>
+            <th></th>
+        </tr>
+        <tr>
+            <th></th>
+            <th>
+                <input type="text" class="form-control" onkeyup="searchTextTable(this);">
+            </th>
+            <th></th>
+            <th></th>
+            <th>
+                <input type="date" class="form-control" onchange="searchTextTable(this);">
+            </th>
+            <th></th>
         </tr>
         </thead>
-        <tbody>
-        @foreach($orders as $order)
-            <tr>
-                <td>{{ $order->id }}</td>
-                <td>{{ $order->name }}</td>
-                <td>{{ $order->description }}</td>
-                <td>{{ $order->created_at->format('Y-m-d') }}</td>
-                <td>
-                    <a href="{{ route('orders.show', $order) }}" class="btn btn-sm btn-info">Dettagli</a>
-                    <a href="{{ route('orders.edit', $order) }}" class="btn btn-sm btn-warning">Modifica</a>
-                    <form action="{{ route('orders.destroy', $order) }}" method="POST" class="d-inline">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Sei sicuro di voler eliminare questo ordine?')">Elimina</button>
-                    </form>
-                </td>
-            </tr>
-        @endforeach
-        </tbody>
     </table>
 @endsection
 
 @section('scripts')
-    <script>
-        $(document).ready(function() {
-            $('#date-filter, #search-filter').on('change keyup', function() {
-                var date = $('#date-filter').val();
-                var search = $('#search-filter').val().toLowerCase();
-
-                $('#orders-table tbody tr').each(function() {
-                    var row = $(this);
-                    var rowDate = row.find('td:eq(3)').text();
-                    var rowText = row.text().toLowerCase();
-
-                    var dateMatch = !date || rowDate === date;
-                    var searchMatch = !search || rowText.includes(search);
-
-                    row.toggle(dateMatch && searchMatch);
-                });
-            });
-        });
-    </script>
+    @vite(['resources/js/orders.js','resources/js/lib/yadcf/yadcf.js'])
 @endsection

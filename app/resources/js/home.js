@@ -26,10 +26,10 @@ $(document).ready(function () {
         success: elaboroStatistiche
     });
 
-    var datatables = new DataTable('#table' , {
+    const datatables = new DataTable('#table' , {
         ajax: $("#table").attr('data-url'),
         language: {
-            url: '//cdn.datatables.net/plug-ins/2.1.5/i18n/it-IT.json'
+            url: 'https://cdn.datatables.net/plug-ins/2.1.5/i18n/it-IT.json'
         },
         processing: true,
         serverSide: true,
@@ -60,4 +60,5 @@ $(document).ready(function () {
             }
         ]
     });
+
 })

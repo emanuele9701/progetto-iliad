@@ -14,6 +14,8 @@ export default defineConfig({
                 'resources/js/lib/DataTables/datatables.js',
                 'resources/js/lib/DataTables/datatables.css',
                 'resources/js/home.js',
+                'resources/js/products.js',
+                'resources/js/orders.js',
             ],
             refresh: true,
         }),

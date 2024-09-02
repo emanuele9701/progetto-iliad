@@ -32,6 +32,11 @@
                         <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
                     </div>
                 </div>
+                <div class="col-12">
+                    <div class="form-group">
+                        <label for="description">Data ordine</label><input type="date" class="form-control" id="order_date" name="order_date" value="" required>
+                    </div>
+                </div>
             </div>
             <div class="row">
                 <div class="col-12">

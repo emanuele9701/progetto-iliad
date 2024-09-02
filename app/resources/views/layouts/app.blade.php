@@ -12,9 +12,34 @@
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
-    <a class="navbar-brand ps-2" href="{{ route('home') }}">Home</a>
-    <a class="navbar-brand ps-2" href="{{ route('orders.index') }}">Ordini</a>
-    <a class="navbar-brand ps-2" href="{{ route('products.index') }}">Prodotti</a>
+    <div class="container-fluid">
+        <a class="navbar-brand ps-2" href="{{ route('home') }}">Home</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="ordersDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Ordini
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="ordersDropdown">
+                        <li><a class="dropdown-item" href="{{ route('orders.index') }}">Visualizza</a></li>
+                        <li><a class="dropdown-item" href="{{ route('orders.create') }}">Aggiungi</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="productsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Prodotti
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="productsDropdown">
+                        <li><a class="dropdown-item" href="{{ route('products.index') }}">Visualizza</a></li>
+                        <li><a class="dropdown-item" href="{{ route('products.create') }}">Aggiungi</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
 </nav>
 
 <div class="container mt-4">

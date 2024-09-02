@@ -10,10 +10,24 @@ class Product extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $guarded = ['id'];
+
     protected $fillable = [
         'name',
         'description',
         'price',
     ];
+
+    protected $casts = [
+        'order_date' => 'datetime',
+        'total_value' => 'decimal:2',
+    ];
+
+
+    public function orders()
+    {
+        return $this->belongsToMany(Order::class, 'products_order')->withPivot('qty');
+    }
+
 }
 

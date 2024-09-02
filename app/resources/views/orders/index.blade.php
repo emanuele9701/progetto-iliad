@@ -6,9 +6,17 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 @endsection
 @section('content')
-    <h1>Lista Ordini</h1>
+    <div class="row">
+        <div class="col-4">
+            <h1>Lista Ordini</h1>
 
-    <table class="table" id="orders-table" data-url="{{ route('api.orders.lista') }}">
+        </div>
+        <div class="col-8">
+            <a class="btn btn-success float-end" href="{{route('orders.create')}}"><i class="bi bi-plus"></i><span>Aggiungi ordine</span></a>
+        </div>
+    </div>
+
+    <table class="table" id="orders-table" data-url="{{ route('api.orders.index') }}">
         <thead>
         <tr>
             <th>#</th>
@@ -35,5 +43,5 @@
 @endsection
 
 @section('scripts')
-    @vite(['resources/js/orders.js','resources/js/lib/yadcf/yadcf.js'])
+    @vite(['resources/js/orders.js'])
 @endsection

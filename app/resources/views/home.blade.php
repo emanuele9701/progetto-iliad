@@ -51,7 +51,7 @@
                 <div class="card-body">
                     <h5 class="card-title">Ordini Recenti</h5>
                     <!-- Tabella ordini -->
-                    <table id="table" data-url="{{route('api.orders.lista')}}">
+                    <table id="table" data-url="{{route('api.orders.index')}}">
                         <thead>
                         <tr>
                             <th>#</th>

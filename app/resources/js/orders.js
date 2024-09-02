@@ -53,38 +53,45 @@ $(document).ready(function () {
         });
 
 
-        table.on('init.dt', function (a, b, rows) {
+        table.on('draw.dt', function (a, b, rows) {
             $('div.actions button.btn-danger:not(div.modal button.btn-danger)').on('click', openFormElimina);
 
             $('div.actions div.modal button.btn-danger').each(function (index, element) {
-                $(element).on('click', function () {
-                    $($('div.actions div.modal')[index]).find('.spinner-border').removeClass('d-none');
-                    $.ajax({
-                        url: 'api/orders/' + rows.data[index].id + "/destroy",
-                        method: 'delete',
-                        success: function (response) {
-                            $($('div.actions div.modal')[index]).find('.spinner-border').addClass('d-none');
-                            $($('div.actions div.modal')[index]).modal('toggle'); // Chiudo il modal corrente
-                            if (response.esito) {
-                                // Ricarico la tabella
-                                table.draw();
-                                $("#modalSuccessSimple").modal('show');
-                                $("#modalSuccessSimple").on('shown.bs.modal', function () {
-                                    setTimeout(function () {
-                                        $("#modalSuccessSimple").modal('toggle');
-                                    }, 1500);
-                                });
-                            }
-                        },
-                        error: function (response) {
-                            $($('div.actions div.modal')[index]).find('.spinner-border').addClass('d-none');
-                            $("#modalErrorSimple").modal('show'); // Visualizzo un modal di errore semplice. Si trova nell app.blade
+                if (!$(element).data('click')) {
+                    handleButtonClick(index, element, table.data().toArray());
+                }
+            });
+        });
+
+        function handleButtonClick(index, element, rows) {
+            $(element).on('click', function () {
+                $($('div.actions div.modal')[index]).find('.spinner-border').removeClass('d-none');
+                var id = 0;
+                if (rows.data !== undefined) {
+                    id = rows.data[index].id;
+                } else {
+                    id = rows[index].id;
+                }
+                $.ajax({
+                    url: 'api/orders/' + id,
+                    method: 'delete',
+                    success: function (response) {
+                        $($('div.actions div.modal')[index]).find('.spinner-border').addClass('d-none');
+                        $($('div.actions div.modal')[index]).modal('toggle'); // Chiudo il modal corrente
+                        if (response.esito) {
+                            // Ricarico la tabella
+                            table.draw();
+                            $("#modalSuccessSimple").modal('show');
                         }
-                    });
+                    },
+                    error: function (response) {
+                        $($('div.actions div.modal')[index]).find('.spinner-border').addClass('d-none');
+                        $("#modalErrorSimple").modal('show'); // Visualizzo un modal di errore semplice. Si trova nell app.blade
+                    }
                 });
             });
-            table.order([4, 'desc']).draw();
-        });
+        }
+
 
         window.searchTextTable = function searchTextTable(element) {
             if (element.value.length > 2) {
@@ -103,14 +110,15 @@ $(document).ready(function () {
             if (ordine != null) {
                 // Ordine caricato
                 $("#customer_name").val(ordine.name);
+                $("#order_date").val(ordine.order_date);
                 $("#spn-id").text(ordine.id);
                 $("textarea[name='description']").val(ordine.description);
                 var costoTotaleOrdine = 0;
                 // Inserisco i prodotti
                 ordine.products.forEach(function (element, index) {
-                    var costoTotale = element.price * element.pivot.qty;
+                    var costoTotale = element.price * element.qty;
                     costoTotaleOrdine += costoTotale;
-                    const newProduct = createProductRow(element.id, element.pivot.qty, element.name, element.price, costoTotale);
+                    const newProduct = createProductRow(element.id, element.qty, element.name, element.price, costoTotale);
                     $('#products-container').append(newProduct);
                     productIndex++;
                 });
@@ -167,7 +175,7 @@ $(document).ready(function () {
             function initializeSelect2() {
                 $('.product-name').select2({
                     ajax: {
-                        url: URL_BASE_API + '/products',
+                        url: URL_BASE_API + '/products/search',
                         dataType: 'json',
                         processResults: function (data) {
                             return {
@@ -222,10 +230,10 @@ $(document).ready(function () {
                 var url = "";
                 var method = "";
                 if (ordine) {
-                    url = URL_BASE_API + '/orders/' + $("input[name='id_ordine']").val() + "/update";
+                    url = URL_BASE_API + '/orders/' + $("input[name='id_ordine']").val() + "";
                     method = 'put';
                 } else {
-                    url = URL_BASE_API + '/orders/store';
+                    url = URL_BASE_API + '/orders';
                     method = 'post';
                 }
                 var serializedForm = $(this).serializeArray();
@@ -236,14 +244,10 @@ $(document).ready(function () {
                     success: function (response) {
                         $("button[type='submit']").find('.spinner-border').addClass('d-none');
                         $("button[type='submit']").removeAttr('disabled');
-                        if (response.esito) {
-                            setTimeout(function () {
-                                $("#modalSuccessSimple").modal('show');
-                            }, 1500);
+                        if (response.data) {
+                            $("#modalSuccessSimple").modal('show');
                         } else {
-                            setTimeout(function () {
-                                $("#modalErrorSimple").modal('show');
-                            }, 1500);
+                            $("#modalErrorSimple").modal('show');
                         }
                     },
                     error: function (response) {
@@ -264,31 +268,37 @@ $(document).ready(function () {
         });
     } else {
         // Show
-        $(document).ready(function() {
+        $(document).ready(function () {
             const orderId = $('#order-id').text(); // Prende l'ID dell'ordine dal testo dello span
             const apiUrl = URL_BASE_API + `/orders/${orderId}`;
 
-            $.getJSON(apiUrl, function(data) {
-                $('#order-id').text(data.object.id);
-                $('#customer-name').text(data.object.name);
-                $('#description').text(data.object.description);
-                $('#created-at').text(new Date(data.object.order_date).toLocaleString());
+            $.getJSON(apiUrl, function (object) {
+                $('#order-id').text(object.data.id);
+                $('#customer-name').text(object.data.name);
+                $('#description').text(object.data.description);
+                const orderDate = new Date(object.data.order_date);
+                const formattedDate = orderDate.toLocaleDateString('it-IT', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
+                });
+                $('#created-at').text(formattedDate);
 
                 const productsList = $('#products-list');
-                data.object.products.forEach(function(product) {
+                object.data.products.forEach(function (product) {
                     const row = `
                 <tr>
                     <td>${product.name}</td>
-                    <td>${product.pivot.qty}</td>
+                    <td>${product.qty}</td>
                     <td>€${parseFloat(product.price).toFixed(2)}</td>
-                    <td>€${(product.price * product.pivot.qty).toFixed(2)}</td>
+                    <td>€${(product.price * product.qty).toFixed(2)}</td>
                 </tr>
             `;
                     productsList.append(row);
                 });
 
                 $('#edit-order').attr('href', `/orders/${orderId}/edit`);
-            }).fail(function(error) {
+            }).fail(function (error) {
                 console.error('Errore:', error);
             });
         });
@@ -307,15 +317,13 @@ function recuperoInfoOrdine() {
         url: URL_BASE_API + '/orders/' + $("input[name='id_ordine']").val(),
         method: 'get',
         success: function (response) {
-            if (response.esito) {
-                ordine = response.object;
+            if (response.data) {
+                ordine = response.data;
             }
+            return false;
         }
     });
     return ordine;
 }
 
-function openFormElimina(element) {
-    var parent = $(element.currentTarget).parent();
-    $($(parent).find('#modalDelete')).modal('show');
-}
+

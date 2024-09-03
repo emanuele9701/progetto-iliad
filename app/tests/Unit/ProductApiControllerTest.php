@@ -41,6 +41,19 @@ class ProductApiControllerTest extends TestCase
     }
 
     /** @test */
+    public function it_can_search_products()
+    {
+        Product::factory()->create(['name' => 'Test Product']);
+        Product::factory()->create(['name' => 'Another Product']);
+
+        $response = $this->getJson('/api/products/search?q=Test');
+
+        $response->assertStatus(200)
+            ->assertJsonCount(1, 'items')
+            ->assertJsonFragment(['name' => 'Test Product']);
+    }
+
+    /** @test */
     public function it_cannot_create_a_product_with_invalid_data()
     {
         $data = [

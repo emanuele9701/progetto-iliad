@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Models\Order;
 use Tests\TestCase;
 use App\Models\Product;
 use Illuminate\Foundation\Testing\RefreshDatabase;

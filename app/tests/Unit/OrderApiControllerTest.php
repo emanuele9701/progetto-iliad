@@ -141,4 +141,32 @@ class OrderApiControllerTest extends TestCase
             'id' => $order->id,
         ]);
     }
+
+    /** @test */
+    public function it_can_list_orders()
+    {
+        $orders = Order::factory()->count(3)->create();
+
+        $response = $this->getJson('/api/orders');
+
+        $response->assertStatus(200)
+            ->assertJsonCount(3, 'data');
+    }
+
+    /** @test */
+    public function it_can_get_order_stats()
+    {
+        Order::factory()->count(5)->create();
+
+        $response = $this->getJson('/api/orders/stats');
+
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'totale_ordini',
+                'ordini_odierni',
+                'somma',
+                'esito'
+            ]);
+    }
+
 }

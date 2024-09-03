@@ -1,66 +1,337 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Documentazione del Progetto: Sistema di Monitoraggio Ordini
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Introduzione
+Questo progetto ha come obiettivo la creazione di un sistema per monitorare e gestire gli ordini degli utenti. Il sistema include un'interfaccia frontend per la visualizzazione e la gestione degli ordini, insieme a un backend RESTful per la gestione dei dati.
 
-## About Laravel
+## Requisiti di Sistema
+- **Software**:
+    - PHP (versione 7.4 o superiore)
+    - Composer
+    - Docker (per l'ambiente containerizzato)
+    - Node v18.19
+    - Npm v10.2
+- **Framework**
+    - Laravel v10 
+- **Hardware**:
+    - Un computer con almeno 4 GB di RAM
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Setup del Progetto
+1. **Clonare il repository**:
+   ```bash
+   git clone https://github.com/emanuele9701/iliad-v2.git
+   cd iliad-v2
+   ```
+Installare le dipendenze:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+   ```bash
+composer install
+   ```
+Configurazione dell'ambiente:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Creare un file .env basato su .env.example e configurare le variabili necessarie, inclusi:
+```bash
+DB_DATABASE: Nome del database ( recuperarlo da docker-composer.yml )
+DB_USERNAME: Nome utente del database ( recuperarlo da docker-composer.yml )
+DB_PASSWORD: Password del database ( recuperarlo da docker-composer.yml )
+WWWUSER: ID utente per il web server ( io ho usato 1000 )
+WWWGROUP: ID gruppo per il web server ( io ho usato 1000 )
+APP_PORT: è il valore che userà docker per mettere in ascolto il server. Io ho usato 8080.
+```
+## Esecuzione del Progetto
+Per avviare il progetto in un ambiente Docker, eseguire il seguente comando:
+```bash
+docker-compose up
+```
+Accedere all'interfaccia frontend visitando http://localhost:<APP_PORT> nel browser.
 
-## Learning Laravel
+Configurazione di Docker
+Il file docker-compose.yml definisce i seguenti servizi:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### laravel.test:
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Costruisce l'immagine dell'applicazione Laravel.
+Espone le porte configurate per l'applicazione e Vite.
+Monta il volume corrente nella directory /var/www/html del container.
+Dipende dal servizio mysql.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### mysql:
 
-## Laravel Sponsors
+Utilizza l'immagine mysql/mysql-server:8.0.
+Espone la porta del database (default 3307 usata per eventuali conflitti con altri servizi di mysql già attivi ).
+Configura le variabili d'ambiente per il database, inclusi nome, utente e password.
+Tali impostazioni si trovano in questo formato sul file docker-compose
+```bash
+        mysql:
+        image: 'mysql/mysql-server:8.0'
+        ports:
+            - '${FORWARD_DB_PORT:-3307}:3306'
+        environment:
+            MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+            MYSQL_ROOT_HOST: '%'
+            MYSQL_DATABASE: '${DB_DATABASE}'
+            MYSQL_USER: '${DB_USERNAME}'
+            MYSQL_PASSWORD: '${DB_PASSWORD}'
+            MYSQL_ALLOW_EMPTY_PASSWORD: 1
+```
+Monta un volume per la persistenza dei dati.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
 
-### Premium Partners
+## Utilizzo dell'API
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+L'API RESTful fornisce i seguenti endpoint per gestire gli ordini e i prodotti.
 
-## Contributing
+### Codici di stato API
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- 200: Richiesta completata con successo
+- 201: Risorsa creata con successo
+- 400: Errore di validazione
+- 404: Risorsa non trovata
+- 500: Errore interno del server
 
-## Code of Conduct
+### Endpoints per gli Ordini
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+1. **GET /api/orders**:  
+   Recupera la lista degli ordini, con possibilità di filtro per nome e data tramite parametri di query.
 
-## Security Vulnerabilities
+   **Esempio di Risposta**:
+   ```json
+   [
+       {
+           "id": 1,
+           "name": "Ordine 1",
+           "description": "Descrizione dell'ordine 1",
+           "order_date": "2024-09-03T12:34:56",
+           "total_value": "100.00",
+           "products": [
+               {
+                   "id": 1,
+                   "name": "Prodotto A",
+                   "price": "25.00",
+                   "qty": 2
+               },
+               {
+                   "id": 2,
+                   "name": "Prodotto B",
+                   "price": "50.00",
+                   "qty": 1
+               }
+           ]
+       }
+   ]
+   
+2. **GET /api/orders/{id}**:  
+   Recupera i dettagli di un ordine specifico, inclusi i prodotti associati.
+   **Esempio di Risposta**:
+   ```json
+   {
+    "id": 1,
+    "name": "Ordine 1",
+    "description": "Descrizione dell'ordine 1",
+    "order_date": "2024-09-03T12:34:56",
+    "total_value": "100.00",
+    "products": [
+        {
+            "id": 1,
+            "name": "Prodotto A",
+            "price": "25.00",
+            "qty": 2
+        }
+    ]
+}
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+3. **POST /api/orders**:  
+   Crea un nuovo ordine. Richiede dati di input validati tramite `StoreOrderRequest`.
+   
+    **Esempio di Risposta**:
+   ```json
+   {
+    "id": 2,
+    "name": "Ordine 2",
+    "description": "Nuovo ordine creato",
+    "order_date": "2024-09-03T13:00:00",
+    "total_value": "150.00",
+    "products": []
+}
 
-## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+4. **PUT /api/orders/{id}**:  
+   Modifica un ordine esistente. Richiede dati di input validati tramite `UpdateOrderRequest`.
+   
+    **Esempio di Risposta**:
+   ```json
+   {
+    "id": 1,
+    "name": "Ordine 1 Modificato",
+    "description": "Descrizione aggiornata",
+    "order_date": "2024-09-03T12:34:56",
+    "total_value": "120.00",
+    "products": []
+    }
+
+5. **DELETE /api/orders/{id}**:  
+   Elimina un ordine esistente.
+
+    **Esempio di Risposta**:
+   ```json
+   {
+    "esito": true   
+    }
+
+6. **GET /api/orders/stats**:  
+   Restituisce statistiche degli ordini, inclusi:
+    - Totale ordini
+    - Numero di ordini odierni
+    - Somma totale degli importi degli ordini
+
+   **Esempio di Risposta**:
+   ```json
+   {
+    "totale_ordini": 50,
+    "ordini_odierni": 5,
+    "somma": 5000.00,
+    "esito": true
+    }
+   ```
+
+### Endpoints per i Prodotti
+
+1. **GET /api/products**:  
+   Recupera la lista dei prodotti, con possibilità di filtro per nome.
+
+   **Esempio di Risposta**:
+   ```json
+      [
+        {
+            "id": 1,
+            "name": "Prodotto A",
+            "description": "Descrizione del prodotto A",
+            "price": "25.00",
+            "created_at": "2024-09-01T08:30:00",
+            "updated_at": "2024-09-01T08:30:00",
+            "orders": []
+        }
+    ]
+   ```
+
+2. **GET /api/products/{id}**:  
+   Recupera i dettagli di un prodotto specifico, inclusi gli ordini associati.
+
+
+**Esempio di Risposta**:
+   ```json
+   {
+    "id": 1,
+    "name": "Prodotto A",
+    "description": "Descrizione del prodotto A",
+    "price": "25.00",
+    "created_at": "2024-09-01T08:30:00",
+    "updated_at": "2024-09-01T08:30:00",
+    "orders": [
+        {
+            "id": 1,
+            "name": "Ordine 1",
+            "total_value": "100.00",
+            "pivot": {
+                "qty": 2
+            }
+        }
+    ]
+}
+   ```
+
+3. **POST /api/products**:  
+   Crea un nuovo prodotto. Richiede dati di input validati tramite `StoreProductRequest`.
+
+
+**Esempio di Risposta**:
+   ```json
+   {
+    "id": 3,
+    "name": "Prodotto C",
+    "description": "Nuovo prodotto creato",
+    "price": "30.00",
+    "created_at": "2024-09-03T13:00:00",
+    "updated_at": "2024-09-03T13:00:00",
+    "orders": []
+}
+
+   ```
+
+4. **PUT /api/products/{id}**:  
+   Modifica un prodotto esistente. Richiede dati di input validati tramite `UpdateProductRequest`.
+
+   **Esempio di Risposta**:
+   ```json
+   {
+    "id": 1,
+    "name": "Prodotto A Modificato",
+    "description": "Descrizione aggiornata",
+    "price": "27.00",
+    "created_at": "2024-09-01T08:30:00",
+    "updated_at": "2024-09-03T13:30:00",
+    "orders": []
+    }
+   ```
+
+5. **DELETE /api/products/{id}**:  
+   Elimina un prodotto esistente.
+
+**Esempio di Risposta**:
+   ```json
+    {
+    "esito": true
+  }
+```
+**GET /api/products/search**:
+Cerca prodotti per nome basato su una query string.
+
+Parametri di Query:
+- `q` (opzionale): Stringa di ricerca per filtrare i prodotti per nome.
+
+    Esempio di Risposta:
+   ```json
+   {
+    "total_count": 1,
+    "items": [
+        {
+            "id": 1,
+            "name": "Prodotto A",
+            "description": "Descrizione del prodotto A",
+            "price": "25.00"
+        }
+    ]
+  }
+
+## Dipendenze aggiuntive
+
+- Yajra DataTables: Utilizzato per la gestione delle tabelle dati nelle API.
+- Vite: Utilizzato per il build e lo sviluppo frontend.
+
+## Validazione delle richieste
+
+Le richieste API sono validate utilizzando Form Request personalizzate:
+
+- `StoreOrderRequest`: Valida la creazione di nuovi ordini.
+- `UpdateOrderRequest`: Valida l'aggiornamento degli ordini esistenti.
+- `StoreProductRequest`: Valida la creazione di nuovi prodotti.
+- `UpdateProductRequest`: Valida l'aggiornamento dei prodotti esistenti.
+
+Queste classi definiscono regole di validazione e messaggi di errore personalizzati.
+
+## Service Providers
+
+L'applicazione utilizza i seguenti service provider personalizzati:
+
+- `OrderServiceProvider`: Gestisce la logica di business relativa agli ordini.
+- `ProductServiceProvider`: Gestisce la logica di business relativa ai prodotti.
+
+## Test
+Per eseguire i test, utilizzare il seguente comando:
+```bash
+vendor/bin/phpunit
+```
+Assicurarsi che tutti i test siano stati eseguiti con successo per garantire la qualità del codice.
+
+
+## Licenza
+Questo progetto è concesso in licenza sotto la Licenza MIT.

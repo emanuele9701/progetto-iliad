@@ -1,2 +1,15 @@
 /vendor/
 /composer.lock
+/.idea/.gitignore
+/.idea/codeception.xml
+/composer.json
+/.idea/deployment.xml
+/.idea/jsLibraryMappings.xml
+/.idea/modules.xml
+/.idea/php.xml
+/.idea/php-test-framework.xml
+/.idea/phpspec.xml
+/.idea/phpunit.xml
+/.idea/progetto-iliad.iml
+/.idea/vcs.xml
+/.idea/webServers.xml

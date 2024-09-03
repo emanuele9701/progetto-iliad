@@ -51,7 +51,7 @@ class ProductApiController extends Controller
     public function store(StoreProductRequest $request)
     {
         $product = $this->productProvider->createProduct($request->all());
-        return new ProductResource($product);
+        return (new ProductResource($product))->response()->setStatusCode(201);
     }
 
     /**
@@ -68,7 +68,7 @@ class ProductApiController extends Controller
     public function update(UpdateProductRequest $request, Product $product)
     {
         $product = $this->productProvider->updateProduct($product,$request->all());
-        return new ProductResource($product);
+        return (new ProductResource($product))->response()->setStatusCode(200);
     }
 
     /**

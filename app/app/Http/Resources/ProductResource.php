@@ -24,4 +24,6 @@ class ProductResource extends JsonResource
             'orders' => $this->orders
         ];
     }
+
+    
 }

@@ -24,7 +24,7 @@ class OrderResource extends JsonResource
                 return [
                     'id' => $product->id,
                     'name' => $product->name,
-                    'price' => number_format($product->price, 2),
+                    'price' => $product->price,
                     'qty' => $product->pivot->qty, // Accesso al campo qty dalla tabella pivot
                 ];
             }), // Usa una Resource anche per i prodotti
